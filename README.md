@@ -48,39 +48,6 @@ Aunque localmente el código carga un CSV/Excel directamente, el diseño de la l
 
 ---
 
-## 🚀 Despliegue en Streamlit Cloud
-
-1. Haz un fork o sube este código a tu repositorio GitHub.
-2. Inicia sesión en [Streamlit Cloud](https://share.streamlit.io/).
-3. Haz clic en **New App** y enlaza tu cuenta de GitHub.
-4. Selecciona el repositorio, define el Main file path como `app/app.py`.
-5. Haz clic en **Deploy**. ¡Tu aplicación estará viva en minutos!
-
----
-
-## 🛠️ Instrucciones de Ejecución Local
-
-1. **Clonar repositorio** e ir al directorio raíz del proyecto.
-2. **Crear un entorno virtual (ideal)**:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # En Linux/Mac
-   venv\Scripts\activate     # En Windows
-   ```
-3. **Instalar dependencias**:
-   ```bash
-   pip install -r app/requirements.txt
-   ```
-4. **Mover datos (si aplica)**: Asegúrate de tener el archivo de datos real en el directorio `data/`.
-5. **Ejecutar servidor local de Streamlit**:
-   ```bash
-   cd app
-   streamlit run app.py
-   ```
-   *Se abrirá automáticamente el Dashboard analítico en tu navegador (por defecto en http://localhost:8501).*
-
----
-
 ## 👨‍💻 Buenas Prácticas Implementadas
 
 - **Diseño por Capas:** Separación entre interfaz (`app.py`), análisis (`notebooks`), y recursos (`data/`).
