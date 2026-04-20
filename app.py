@@ -250,6 +250,15 @@ def render_airflow():
 # ROUTER PRINCIPAL
 # ==============================================================
 def main():
+    import sys
+    # Verificación de versión de Python
+    if sys.version_info >= (3, 14):
+        st.error("🚨 Esta aplicación no es compatible con Python 3.14 o superior por problemas de dependencias en Streamlit.")
+        st.stop()
+    elif sys.version_info < (3, 10):
+        st.error("🚨 Esta aplicación requiere Python 3.10 como mínimo.")
+        st.stop()
+        
     df = load_data()
     
     with st.sidebar:
@@ -263,16 +272,17 @@ def main():
         st.markdown("---")
         st.markdown("👨‍💻 Desarrollado como proyecto Senior de Datos.")
         
-    if seccion == "Inicio":
-        render_home(df)
-    elif seccion == "Exploración de datos":
-        render_exploration(df)
-    elif seccion == "Visualizaciones":
-        render_visualizations(df)
-    elif seccion == "Análisis predictivo":
-        render_prediction(df)
-    elif seccion == "Orquestación (Airflow)":
-        render_airflow()
+    match seccion:
+        case "Inicio":
+            render_home(df)
+        case "Exploración de datos":
+            render_exploration(df)
+        case "Visualizaciones":
+            render_visualizations(df)
+        case "Análisis predictivo":
+            render_prediction(df)
+        case "Orquestación (Airflow)":
+            render_airflow()
 
 if __name__ == "__main__":
     main()
