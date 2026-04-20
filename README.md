@@ -88,4 +88,4 @@ Aunque localmente el código carga un CSV/Excel directamente, el diseño de la l
 - **Control de errores:** Uso de bloques Try/Except en funciones críticas, como la carga y transformación.
 - **Visualización dinámica:** Plotly y Seaborn integrados para analítica moderna, evitando gráficos estáticos y sin opciones de interpretación por el usuario final.
 
-Elaborado con ♥ para los entusiastas de Datos y Python.
+
