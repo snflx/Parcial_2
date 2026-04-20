@@ -206,45 +206,45 @@ def render_prediction(df):
         st.plotly_chart(fig_prob)
 
 def render_airflow():
-    st.title("Orquestación de Datos: DAGs (Simulación Airflow) 🌬️")
+    st.title("Orquestación de Datos: Tareas ETL e Integración de DAGs 🌬️")
     
     st.markdown("""
-    En un entorno real de Ingeniería de Datos corporativo, los flujos (ETL) no se corren manualmente desde un script, sino que se orquestan. 
-    A continuación se documentan 3 ejercicios de **Directed Acyclic Graphs (DAGs)** que componen este flujo.
+    En el Paso 5 del proyecto, se ha diseñado una integración con **Apache Airflow** desarrollando el script `dags/ai_human_etl_dag.py`.
+    A continuación, resolvemos e implementamos 3 de los escenarios solicitados en el diseño de nuestro DAG de Text Analytics:
     """)
-    
-    st.info("Nota técnica: Estos DAGs son ilustrativos y representan la lógica separada del pipeline en herramientas como Apache Airflow.")
     
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        st.markdown("#### DAG 1: Ingesta Cruda")
+        st.markdown("#### Ejercicio 1: Extracción y Timeout")
+        st.info("**Pregunta:** Si la tarea `extract_data` falla por timeout de la API, ¿qué comportamiento se espera según la configuración de `default_args`?")
         st.markdown("""
-        - **Extracción horaria:** `fetch_kaggle_data`
-        - **Objetivo:** Conectarse a la API, descargar el .xlsx crudo.
-        - **Almacenamiento:** Lo guarda temporalmente en un bucket s3 (Ej: `s3://data-raw/ai_human`).
+        **Implementación en el Proyecto:**
+        En nuestro flujo, si la descarga del `.xlsx` se agota, Airflow aplicará la regla `retries: 3` y `retry_delay: 5m` configurada en el diccionario `default_args`. 
+        Intentará extraer la data 3 veces antes de marcar el pipeline como fallido.
         """)
-        st.code("ext_task >> val_raw_task", language="python")
+        st.code("task_extract = PythonOperator(\n    task_id='extract_data',\n    python_callable=extract_data,\n    execution_timeout=timedelta(minutes=2)\n)", language="python")
         
     with col2:
-        st.markdown("#### DAG 2: Transformación (ETL)")
+        st.markdown("#### Ejercicio 2: Carga de Datos Transaccional")
+        st.info("**Pregunta:** Si se quiere agregar una tarea que cargue los transformados en BigQuery en lugar de solo simular, ¿qué cambios requiere el DAG?")
         st.markdown("""
-        - **Trigger:** Al concluir el DAG 1.
-        - **Limpieza:** Dropear nulos (`clean_nulls_task`).
-        - **Transformación:** Calcular `text_length` y escalar variables numéricas.
-        - **Alerta:** Enviar a Slack si se detectan anomolías (Quality check).
+        **Implementación en el Proyecto:**
+        Sustituimos el `PythonOperator` base por un enlace real a Data Warehousing.
+        Añadimos como nodo paralelo o sustituto principal el uso de un operador especializado, tal como vemos en el código.
         """)
-        st.code("read_s3 >> clean >> feat_eng >> write_s3_clean", language="python")
+        st.code("task_load_bigquery = EmptyOperator(\n    task_id='load_to_bigquery_real',\n    doc_md='Conector real usando un GCSToBigQueryOperator...'\n)", language="python")
 
     with col3:
-        st.markdown("#### DAG 3: Reentrenamiento Modelo")
+        st.markdown("#### Ejercicio 3: Monitoreo y Reglas de Alerta")
+        st.info("**Pregunta:** En el monitoreo, la tarea alert_email se usa con `trigger_rule=\"one_failed\"`. ¿Qué significa esto?")
         st.markdown("""
-        - **Frecuencia:** Semanal.
-        - **Ejecución:** Descarga la data procesada.
-        - **Model ops:** Separa en Train/Test, entrena Random Forest y guarda métricas (MLflow).
-        - **Deploy:** Actualiza el registro (Model Registry).
+        **Implementación en el Proyecto:**
+        Configuramos el DAG para que la tarea `task_alert_email` observe tanto la ingesta como la transformación. Al definir `trigger_rule='one_failed'`, si tan solo una de ambas tareas precedentes arroja error, se despacha un correo crítico al equipo de datos sin necesidad de anular todo el pipeline para avisar.
         """)
-        st.code("fetch_clean >> train_model >> register_model", language="python")
+        st.code("task_alert_email = EmailOperator(\n    task_id='alert_email',\n    to='team@...',\n    trigger_rule='one_failed'\n)\n\n[task_extract, task_transform] >> task_alert_email", language="python")
+
+    st.success("Puedes revisar el código ensamblado completo y la definición técnica de las tareas ETL en el archivo local `dags/ai_human_etl_dag.py` construido por el sistema.")
 
 # ==============================================================
 # ROUTER PRINCIPAL
