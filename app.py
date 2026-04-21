@@ -21,7 +21,27 @@ st.set_page_config(
 # ==============================================================
 # VARIABLES GLOBALES Y CACHE
 # ==============================================================
-DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "AuthentiText_X_2026_AI_vs_Human_Detection_1K.xlsx")
+def resolve_data_path():
+    filename = "AuthentiText_X_2026_AI_vs_Human_Detection_1K.xlsx"
+    # Try relative from current working directory (usually root in Streamlit Cloud)
+    path_cwd = os.path.join(os.getcwd(), "data", filename)
+    if os.path.exists(path_cwd):
+        return path_cwd
+    
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    # Try one level up from this file's directoy (local app/ folder structure)
+    path_up = os.path.join(base_dir, "..", "data", filename)
+    if os.path.exists(path_up):
+        return path_up
+    
+    # Try same level as this file
+    path_same = os.path.join(base_dir, "data", filename)
+    if os.path.exists(path_same):
+        return path_same
+        
+    return f"data/{filename}"
+
+DATA_PATH = resolve_data_path()
 TARGET = 'author_type'
 NUMERIC_COLUMNS = [
     'prompt_complexity_score',
