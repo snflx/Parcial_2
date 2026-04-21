@@ -252,10 +252,7 @@ def render_airflow():
 def main():
     import sys
     # Verificación de versión de Python
-    if sys.version_info >= (3, 14):
-        st.error("🚨 Esta aplicación no es compatible con Python 3.14 o superior por problemas de dependencias en Streamlit.")
-        st.stop()
-    elif sys.version_info < (3, 10):
+    if sys.version_info < (3, 10):
         st.error("🚨 Esta aplicación requiere Python 3.10 como mínimo.")
         st.stop()
         
